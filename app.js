@@ -41,15 +41,23 @@
     return a;
   }
 
-  // Lowercase, trim, collapse spaces, strip accents and trailing punctuation
+  // Lowercase, trim, collapse spaces, strip accents and trailing punctuation.
+  // Also accepts "dorp, het" for "het dorp" and ignores "…" in phrases
+  // like "over … heen".
   function normalize(s) {
-    return String(s)
+    let t = String(s)
       .normalize("NFD")
       .replace(/[̀-ͯ]/g, "")
       .toLowerCase()
-      .replace(/[.!?,;]+$/g, "")
+      .replace(/[’‘`]/g, "'")
+      .replace(/…|\.{2,}/g, " ")
       .replace(/\s+/g, " ")
+      .trim()
+      .replace(/[.!?,;]+$/g, "")
       .trim();
+    const m = t.match(/^(.+?)\s*,\s*(de|het|een)$/);
+    if (m) t = m[2] + " " + m[1];
+    return t;
   }
 
   function answersFor(word) {

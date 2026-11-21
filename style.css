@@ -40,8 +40,11 @@ body {
 /* Pack list */
 .pack-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 560px) {
+  .pack-list { grid-template-columns: repeat(2, 1fr); }
 }
 
 .pack-card {
@@ -62,7 +65,7 @@ body {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   outline: none;
 }
-.pack-name { font-weight: 650; font-size: 1.1rem; margin: 0 0 4px; }
+.pack-name { font-weight: 650; font-size: 1rem; margin: 0 0 8px; }
 .pack-desc { color: var(--muted); font-size: 0.9rem; margin: 0 0 10px; }
 .pack-count {
   display: inline-block;

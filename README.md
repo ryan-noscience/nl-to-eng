@@ -26,7 +26,7 @@ Open `packs.js` and add entries to the `PACKS` list:
 },
 ```
 
-Answers are checked ignoring capitals, extra spaces and accents. Articles (`de`/`het`) are checked, so include them only if you want to practise them.
+Answers are checked ignoring capitals, extra spaces and accents. Articles (`de`/`het`) are checked, so include them only if you want to practise them. Both "het dorp" and "dorp, het" are accepted.
 
 ## Hosting on GitHub Pages
 
