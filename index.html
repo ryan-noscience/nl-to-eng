@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>English → Dutch Vocab Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+
+    <!-- Home: pack selection -->
+    <section id="home-screen" class="screen">
+      <header class="header">
+        <h1>English <span class="arrow">→</span> Dutch</h1>
+        <p class="subtitle">Pick a word pack to start</p>
+      </header>
+      <div id="pack-list" class="pack-list"></div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz-screen" class="screen" hidden>
+      <div class="quiz-top">
+        <button id="quit-btn" class="link-btn" type="button">← Packs</button>
+        <span id="pack-title" class="pack-title"></span>
+        <span id="progress-text" class="progress-text"></span>
+      </div>
+      <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+
+      <div class="card">
+        <p class="prompt-label">Translate into Dutch</p>
+        <p id="english-word" class="english-word"></p>
+
+        <form id="answer-form" autocomplete="off">
+          <input
+            id="answer-input"
+            type="text"
+            placeholder="Type the Dutch word…"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Your answer in Dutch"
+          />
+          <button id="submit-btn" class="btn primary" type="submit">Check</button>
+        </form>
+
+        <div id="feedback" class="feedback" hidden aria-live="polite"></div>
+        <button id="next-btn" class="btn primary" type="button" hidden>Next →</button>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section id="results-screen" class="screen" hidden>
+      <div class="card results-card">
+        <p class="prompt-label" id="results-pack"></p>
+        <p id="score" class="score"></p>
+        <p id="score-message" class="score-message"></p>
+
+        <div id="missed-wrap" hidden>
+          <h2>Words to review</h2>
+          <ul id="missed-list" class="missed-list"></ul>
+        </div>
+
+        <div class="results-actions">
+          <button id="retry-btn" class="btn" type="button">Try again</button>
+          <button id="home-btn" class="btn primary" type="button">Back to packs</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="packs.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
