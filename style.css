@@ -11,7 +11,39 @@
   --wrong-bg: #fdecea;
   --wrong: #b3261e;
   --radius: 14px;
+  --accent-soft: #fdf0e6;
 }
+
+/* Themes page uses a teal colour scheme */
+body[data-group="themes"] {
+  --accent: #0e7c86;
+  --accent-dark: #0a5f67;
+  --accent-soft: #e0f2f3;
+  --bg: #f1f6f6;
+}
+
+/* Page tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: -8px auto 24px;
+  padding: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: fit-content;
+}
+.tab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.tab:hover { color: var(--text); }
+.tab.active { background: var(--accent); color: #fff; }
 
 * { box-sizing: border-box; }
 
@@ -48,6 +80,10 @@ body {
 }
 
 .pack-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   text-align: left;
   background: var(--card);
   border: 1px solid var(--border);
@@ -71,7 +107,7 @@ body {
   display: inline-block;
   font-size: 0.8rem;
   color: var(--accent-dark);
-  background: #fdf0e6;
+  background: var(--accent-soft);
   padding: 2px 8px;
   border-radius: 999px;
 }
