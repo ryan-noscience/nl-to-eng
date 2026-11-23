@@ -99,7 +99,15 @@
       packList.appendChild(p);
       return;
     }
+    let lastSection = null;
     packs.forEach((pack) => {
+      if (pack.section && pack.section !== lastSection) {
+        const h = document.createElement("h2");
+        h.className = "section-heading";
+        h.textContent = pack.section;
+        packList.appendChild(h);
+        lastSection = pack.section;
+      }
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "pack-card";
