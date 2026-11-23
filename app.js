@@ -5,6 +5,7 @@
   const $ = (id) => document.getElementById(id);
   const screens = {
     home: $("home-screen"),
+    list: $("list-screen"),
     quiz: $("quiz-screen"),
     results: $("results-screen"),
   };
@@ -108,31 +109,74 @@
         packList.appendChild(h);
         lastSection = pack.section;
       }
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "pack-card";
+      const card = document.createElement("div");
+      card.className = "pack-card";
 
       const name = document.createElement("p");
       name.className = "pack-name";
       name.textContent = pack.name;
-      btn.appendChild(name);
+      card.appendChild(name);
 
       if (pack.description) {
         const desc = document.createElement("p");
         desc.className = "pack-desc";
         desc.textContent = pack.description;
-        btn.appendChild(desc);
+        card.appendChild(desc);
       }
 
       const count = document.createElement("span");
       count.className = "pack-count";
       const n = pack.words.length;
       count.textContent = n + (n === 1 ? " word" : " words");
-      btn.appendChild(count);
+      card.appendChild(count);
 
-      btn.addEventListener("click", () => startQuiz(pack));
-      packList.appendChild(btn);
+      const actions = document.createElement("div");
+      actions.className = "card-actions";
+      const listBtn = document.createElement("button");
+      listBtn.type = "button";
+      listBtn.className = "card-btn list-btn";
+      listBtn.textContent = "Word list";
+      listBtn.setAttribute("aria-label", "Word list for " + pack.name);
+      listBtn.addEventListener("click", () => showList(pack));
+      const testBtn = document.createElement("button");
+      testBtn.type = "button";
+      testBtn.className = "card-btn test-btn";
+      testBtn.textContent = "Test";
+      testBtn.setAttribute("aria-label", "Test " + pack.name);
+      testBtn.addEventListener("click", () => startQuiz(pack));
+      actions.append(listBtn, testBtn);
+      card.appendChild(actions);
+
+      packList.appendChild(card);
     });
+  }
+
+  // ---- Word list ----
+  function showList(pack) {
+    currentPack = pack;
+    $("list-title").textContent = pack.name;
+    const n = pack.words.length;
+    $("list-count").textContent = n + (n === 1 ? " word" : " words");
+    const body = $("word-table-body");
+    body.innerHTML = "";
+    pack.words.forEach((w) => {
+      const tr = document.createElement("tr");
+      const en = document.createElement("td");
+      en.textContent = w.en;
+      const nl = document.createElement("td");
+      nl.className = "nl";
+      const answers = answersFor(w);
+      nl.textContent = answers[0];
+      if (answers.length > 1) {
+        const alt = document.createElement("span");
+        alt.className = "alt";
+        alt.textContent = "also: " + answers.slice(1).join(", ");
+        nl.appendChild(alt);
+      }
+      tr.append(en, nl);
+      body.appendChild(tr);
+    });
+    showScreen("list");
   }
 
   // ---- Quiz ----
@@ -265,6 +309,8 @@
     if (confirm("Leave this quiz? Your progress will be lost.")) showScreen("home");
   });
   $("retry-btn").addEventListener("click", () => startQuiz(currentPack));
+  $("list-back-btn").addEventListener("click", () => showScreen("home"));
+  $("list-test-btn").addEventListener("click", () => startQuiz(currentPack));
   $("home-btn").addEventListener("click", () => showScreen("home"));
 
   window.addEventListener("hashchange", () => {
