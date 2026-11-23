@@ -64,17 +64,42 @@
     return Array.isArray(word.nl) ? word.nl : [word.nl];
   }
 
+  // ---- Groups (pages) ----
+  const GROUPS = {
+    course: { packs: () => (typeof PACKS !== "undefined" ? PACKS : []), file: "packs.js" },
+    themes: { packs: () => (typeof THEME_PACKS !== "undefined" ? THEME_PACKS : []), file: "themes.js" },
+  };
+  let currentGroup = "course";
+
+  function groupFromHash() {
+    const g = location.hash.replace("#", "");
+    return GROUPS[g] ? g : "course";
+  }
+
+  function setGroup(group) {
+    currentGroup = group;
+    document.body.dataset.group = group;
+    document.querySelectorAll(".tab").forEach((t) => {
+      const active = t.dataset.group === group;
+      t.classList.toggle("active", active);
+      if (active) t.setAttribute("aria-current", "page");
+      else t.removeAttribute("aria-current");
+    });
+    renderHome();
+  }
+
   // ---- Home ----
   function renderHome() {
     packList.innerHTML = "";
-    if (typeof PACKS === "undefined" || !PACKS.length) {
+    const packs = GROUPS[currentGroup].packs();
+    if (!packs.length) {
       const p = document.createElement("p");
-      p.textContent = "No packs yet — add some in packs.js.";
+      p.textContent = "No packs yet — add some in " + GROUPS[currentGroup].file + ".";
       p.className = "subtitle";
       packList.appendChild(p);
       return;
     }
-    PACKS.forEach((pack) => {
+    packs.forEach((pack) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "pack-card";
@@ -234,7 +259,12 @@
   $("retry-btn").addEventListener("click", () => startQuiz(currentPack));
   $("home-btn").addEventListener("click", () => showScreen("home"));
 
+  window.addEventListener("hashchange", () => {
+    setGroup(groupFromHash());
+    showScreen("home");
+  });
+
   // ---- Init ----
-  renderHome();
+  setGroup(groupFromHash());
   showScreen("home");
 })();
