@@ -29,6 +29,7 @@
 
   // ---- Helpers ----
   function showScreen(name) {
+    if (name === "home") renderHome(); // refresh traffic lights
     Object.entries(screens).forEach(([key, el]) => (el.hidden = key !== name));
     window.scrollTo(0, 0);
   }
@@ -59,6 +60,43 @@
     const m = t.match(/^(.+?)\s*,\s*(de|het|een)$/);
     if (m) t = m[2] + " " + m[1];
     return t;
+  }
+
+  // ---- Scores (saved in this browser) ----
+  const SCORE_KEY = "vocabQuizScores";
+
+  function loadScores() {
+    try {
+      return JSON.parse(localStorage.getItem(SCORE_KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveScore(packId, correct, total) {
+    try {
+      const scores = loadScores();
+      const prev = scores[packId] || {};
+      scores[packId] = {
+        correct,
+        total,
+        best: Math.max(prev.best || 0, total ? correct / total : 0),
+        attempts: (prev.attempts || 0) + 1,
+        date: new Date().toISOString().slice(0, 10),
+      };
+      localStorage.setItem(SCORE_KEY, JSON.stringify(scores));
+    } catch (e) {
+      /* storage unavailable: lights just won't update */
+    }
+  }
+
+  // green ≥ 80%, amber 50–79%, red < 50%, grey = not tried yet
+  function lightFor(score) {
+    if (!score || !score.total) return "none";
+    const pct = score.correct / score.total;
+    if (pct >= 0.8) return "green";
+    if (pct >= 0.5) return "amber";
+    return "red";
   }
 
   function answersFor(word) {
@@ -100,6 +138,7 @@
       packList.appendChild(p);
       return;
     }
+    const scores = loadScores();
     let lastSection = null;
     packs.forEach((pack) => {
       if (pack.section && pack.section !== lastSection) {
@@ -112,9 +151,25 @@
       const card = document.createElement("div");
       card.className = "pack-card";
 
+      const score = scores[pack.id];
+      const light = lightFor(score);
+      card.dataset.light = light;
+
       const name = document.createElement("p");
       name.className = "pack-name";
-      name.textContent = pack.name;
+      const dot = document.createElement("span");
+      dot.className = "light light-" + light;
+      const label =
+        light === "none"
+          ? "Not tested yet"
+          : "Last score " + score.correct + "/" + score.total +
+            " (" + Math.round((score.correct / score.total) * 100) + "%), best " +
+            Math.round(score.best * 100) + "%, " + score.attempts +
+            (score.attempts === 1 ? " attempt" : " attempts");
+      dot.title = label;
+      dot.setAttribute("role", "img");
+      dot.setAttribute("aria-label", label);
+      name.append(dot, document.createTextNode(pack.name));
       card.appendChild(name);
 
       if (pack.description) {
@@ -128,7 +183,17 @@
       count.className = "pack-count";
       const n = pack.words.length;
       count.textContent = n + (n === 1 ? " word" : " words");
-      card.appendChild(count);
+      const meta = document.createElement("div");
+      meta.className = "pack-meta";
+      meta.appendChild(count);
+      if (light !== "none") {
+        const last = document.createElement("span");
+        last.className = "pack-score score-" + light;
+        last.textContent = Math.round((score.correct / score.total) * 100) + "%";
+        last.title = label;
+        meta.appendChild(last);
+      }
+      card.appendChild(meta);
 
       const actions = document.createElement("div");
       actions.className = "card-actions";
@@ -269,6 +334,7 @@
     const correct = results.filter((r) => r.correct).length;
     const pct = total ? Math.round((correct / total) * 100) : 0;
 
+    saveScore(currentPack.id, correct, total);
     $("results-pack").textContent = currentPack.name;
     $("score").textContent = correct + " / " + total;
 
